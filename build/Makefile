@@ -95,10 +95,10 @@ prune:
 	docker images -q -f dangling=true | xargs --no-run-if-empty docker rmi
 
 pull:
-	docker pull --all-tags ${DOCKER_IMAGE}
+	docker pull ${DOCKER_IMAGE}:${TAG}
 
 push:
-	docker push ${DOCKER_IMAGE}
+	docker push ${DOCKER_IMAGE}:${TAG}
 
 release:
 	docker push ${DOCKER_IMAGE}:$(TAG)
