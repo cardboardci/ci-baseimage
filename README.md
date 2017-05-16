@@ -20,7 +20,7 @@ A super small image for use as a continuous integration base image.
 
 You can setup a new docker image based on this image with the following:
 
-```yaml
+```docker
 FROM jrbeverly/baseimage:alpine-3.5
 
 RUN apk add --update make
@@ -135,7 +135,7 @@ The notation of the build variables is short form for docker user id (`DUID`) an
 [license-badge]: https://images.microbadger.com/badges/license/jrbeverly/baseimage.svg
 [license-link]: https://microbadger.com/images/jrbeverly/baseimage "Get your own license badge on microbadger.com"
 
-[image-badge]: https://img.shields.io/badge/alpine-_-orange.svg?maxAge=2592000
+[image-badge]: https://img.shields.io/badge/base-alpine-orange.svg?maxAge=2592000
 [image-link]: https://hub.docker.com/_/alpine/
 
 [edge-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:alpine.svg
