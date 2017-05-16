@@ -73,9 +73,9 @@ ubuntu-17.04: VERSION=ubuntu-17.04
 ubuntu-17.04: TAG=ubuntu-17.04
 ubuntu-17.04: build
 
-ubuntu-latest: VERSION=ubuntu
-ubuntu-latest: TAG=ubuntu
-ubuntu-latest: build
+ubuntu: VERSION=ubuntu
+ubuntu: TAG=ubuntu
+ubuntu: build
 
 # Testing rules
 #
