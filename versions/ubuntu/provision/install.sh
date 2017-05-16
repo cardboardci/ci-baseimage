@@ -2,9 +2,10 @@
 set -ex
 cd /tmp/
 
-apk update
-apk upgrade
+apt-get update -y
+apt-get -y upgrade
 
-apk add --update --no-cache ca-certificates curl bash
+apt-get install -y ca-certificates curl bash
 
-rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
+apt-get clean
+rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
