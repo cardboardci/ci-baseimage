@@ -1,4 +1,4 @@
-FROM alpine:3.3
+FROM ubuntu:16.04
 MAINTAINER jrbeverly
 
 # Environment Variables
@@ -9,8 +9,8 @@ ENV HOME=/
 # Provision
 #
 # Copy and execute provisioning scripts of the docker container.
-COPY provision/install /tmp/install
-RUN sh /tmp/install && rm -f /tmp/install 
+COPY provision/install.sh /tmp/install.sh
+RUN sh /tmp/install.sh && rm -f /tmp/install.sh
 
 # Options
 #
@@ -28,7 +28,7 @@ ARG DGID
 # User
 #
 # Configuration of the docker user for container execution.
-RUN addgroup -g ${DGID} -S docker && adduser -S -G docker -u ${DUID} docker
+RUN addgroup --gid ${DGID} --system docker && adduser --system --uid ${DUID} --gid ${DGID} docker
 
 # Metadata Arguments
 #
@@ -43,7 +43,7 @@ ARG VCS_REF
 LABEL \
     org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.name="baseimage" \
-    org.label-schema.description="A minimal alpine base image modified for jrbeverly-docker." \
+    org.label-schema.description="A minimal base image modified for Docker-CI." \
     org.label-schema.url="" \
     org.label-schema.license="MIT" \
     org.label-schema.vcs-type="Git" \

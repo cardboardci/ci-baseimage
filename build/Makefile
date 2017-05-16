@@ -5,38 +5,91 @@ include Makefile.user.variable
 # Variables
 #
 # Common variables of the project.
-VERSION ?= 3.5
 DOCKER_IMAGE := ${REGISTRY}/${NAMESPACE}/${PROJECT}
-DOCKER_TAG := $(VERSION)
+
+# Build Variables
+#
+# Variables used for the generic build
+TAG ?= alpine
+VERSION ?= alpine
 
 # File System Variables
 #
 # Variables related to the file system paths.
-DOCKER_DIR := ../src/.
-DOCKER_FILE := Dockerfile
-DOCKERFILE := ${DOCKER_DIR}/${DOCKER_FILE}.${VERSION}
+DIRECTORY := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+DIRECTORY_ROOT := $(shell dirname $(DIRECTORY))
+VERSIONS := $(DIRECTORY_ROOT)/versions
+DOCKER_DIR ?= $(VERSIONS)/$(VERSION)
+DOCKERFILE ?= $(VERSIONS)/$(VERSION)/Dockerfile
 
-.PHONY: build clean prune pull push
+# Rules
+#
+# Rules of the makefile
+.PHONY: build debug pull push prune clean release
 
-all: build
-default: build
-release: build
-
-debug:
-	@echo Docker Image: $(DOCKER_IMAGE):$(DOCKER_TAG)
+# Build rules
+#
+# Build rules for the docker project.
 
 build:
 	docker build --pull \
-		 -t ${DOCKER_IMAGE}:$(DOCKER_TAG) \
+		 -t ${DOCKER_IMAGE}:$(TAG) \
 		--build-arg BUILD_DATE="${BUILD_DATE}" \
 		--build-arg VERSION="${CODE_VERSION}" \
-		--build-arg VCS_REF="${VCS_REF}" \
+		--build-arg VCS_REF="${GIT_COMMIT}" \
 		--build-arg DUID="${DUID}" \
 		--build-arg DGID="${DGID}" \
-		-f ${DOCKERFILE} ${DOCKER_DIR} \
+		-f ${DOCKERFILE} ${DOCKER_DIR}/. \
+
+alpine-3.2: VERSION=alpine-3.2
+alpine-3.2: TAG=alpine-3.2
+alpine-3.2: build
+
+alpine-3.3: VERSION=alpine-3.3
+alpine-3.3: TAG=alpine-3.3
+alpine-3.3: build
+
+alpine-3.4: VERSION=alpine-3.4
+alpine-3.4: TAG=alpine-3.4
+alpine-3.4: build
+
+alpine-3.5: VERSION=alpine-3.5
+alpine-3.5: TAG=alpine-3.5
+alpine-3.5: build
+
+alpine: VERSION=alpine
+alpine: TAG=alpine
+alpine: build
+
+ubuntu-16.04: VERSION=ubuntu-16.04
+ubuntu-16.04: TAG=ubuntu-16.04
+ubuntu-16.04: build
+
+ubuntu-16.10: VERSION=ubuntu-16.10
+ubuntu-16.10: TAG=ubuntu-16.10
+ubuntu-16.10: build
+
+ubuntu-17.04: VERSION=ubuntu-17.04
+ubuntu-17.04: TAG=ubuntu-17.04
+ubuntu-17.04: build
+
+ubuntu: VERSION=ubuntu
+ubuntu: TAG=ubuntu
+ubuntu: build
+
+# Testing rules
+#
+# Test rules for docker projects.
+
+debug:
+	@echo Docker Image: $(DOCKER_IMAGE):$(TAG)
+
+# Generic rules
+#
+# Generic rules for docker projects.
 
 clean:
-	docker rmi --force ${DOCKER_IMAGE}:$(DOCKER_TAG) || exit 0
+	docker rmi $(shell docker images | grep ${NAMESPACE}/${PROJECT} | tr -s ' ' | cut -d ' ' -f 3)
 
 prune:
 	docker images -q -f dangling=true | xargs --no-run-if-empty docker rmi
@@ -48,4 +101,4 @@ push:
 	docker push ${DOCKER_IMAGE}
 
 release:
-	docker push ${DOCKER_IMAGE}:$(DOCKER_TAG)
+	docker push ${DOCKER_IMAGE}:$(TAG)

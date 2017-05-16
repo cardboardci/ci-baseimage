@@ -1,15 +1,22 @@
 #!/bin/sh
-set -e
+set -ex
 
-CURRENT=$(pwd)
+# Variables
+#
+# Variables of the script.
+SCRIPT=$(readlink -f "$0")
+DIR="$(dirname $SCRIPT)"
+ROOT_DIR="$(dirname $DIR)"
+BUILD_DIR="${ROOT_DIR}/build"
 
-cd ../src/
-for filename in Dockerfile.*
+# Rasterizing
+#
+# Rasterizes the scalable vector graphics.
+cd "${ROOT_DIR}/versions"
+for dirname in *
 do
-    extension="${filename#*.}"
-	echo "Building: $filename"
-    
-    cd $CURRENT
-    make VERSION=${extension} build
-    make VERSION=${extension} release
+  test -d "$dirname" || continue
+
+  make -C "${BUILD_DIR}" ${dirname}
+  make -C "${BUILD_DIR}" TAG=${dirname} release
 done

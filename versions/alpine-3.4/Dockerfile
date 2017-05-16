@@ -1,4 +1,4 @@
-FROM alpine:3.5
+FROM alpine:3.4
 MAINTAINER jrbeverly
 
 # Environment Variables
@@ -9,8 +9,8 @@ ENV HOME=/
 # Provision
 #
 # Copy and execute provisioning scripts of the docker container.
-COPY provision/install /tmp/install
-RUN sh /tmp/install && rm -f /tmp/install 
+COPY provision/install.sh /tmp/install.sh
+RUN sh /tmp/install.sh && rm -f /tmp/install.sh
 
 # Options
 #
@@ -43,7 +43,7 @@ ARG VCS_REF
 LABEL \
     org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.name="baseimage" \
-    org.label-schema.description="A minimal alpine base image modified for jrbeverly-docker." \
+    org.label-schema.description="A minimal base image modified for Docker-CI." \
     org.label-schema.url="" \
     org.label-schema.license="MIT" \
     org.label-schema.vcs-type="Git" \
