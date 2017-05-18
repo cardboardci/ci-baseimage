@@ -13,6 +13,7 @@ VERSION ?= alpine
 #
 # Common variables of the project.
 DOCKER_IMAGE := ${REGISTRY}/${NAMESPACE}/${PROJECT}
+RELEASE_IMAGE ?= $(DOCKER_IMAGE)
 IMAGE_REF ?= $(DOCKER_IMAGE):$(PREFIX_TAG)$(TAG)
 
 # File System Variables
@@ -106,4 +107,5 @@ push:
 	docker push $(IMAGE_REF)
 
 release:
-	docker push $(IMAGE_REF)
+	docker tag $(IMAGE_REF) $(RELEASE_IMAGE):$(TAG)
+	docker push $(RELEASE_IMAGE):$(TAG)

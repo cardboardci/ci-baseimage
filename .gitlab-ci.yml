@@ -18,13 +18,20 @@ variables:
   PROJECT: docker-baseimage
   GIT_COMMIT: ${CI_COMMIT_SHA}
   PREFIX_TAG: ${CI_COMMIT_SHA}-
+  RELEASE_IMAGE: docker.io/jrbeverly/baseimage
 
+# Build
+#
+# Build steps.
 build:
   stage: build
   script:
     - make -C build/ alpine
     - make -C build/ VERSION=alpine TAG=alpine push
 
+# Test
+#
+# Test steps.
 test:
   stage: test
   script:
@@ -33,12 +40,16 @@ test:
   dependencies:
     - build
 
-#release:
-#  stage: release
-#  script:
-#    - docker login -u $DOCKER_BUILD_USER -p $DOCKER_BUILD_TOKEN
-#    - make -C build/ VERSION=alpine TAG=alpine pull
-#  dependencies:
-#    - test
+# Release
+#
+# Release steps.
+release:
+  stage: release
+  script:
+    - docker login -u $DOCKER_BUILD_USER -p $DOCKER_BUILD_TOKEN
+    - make -C build/ VERSION=alpine TAG=alpine pull
+    - make -C build/ VERSION=alpine TAG=alpine release
+  dependencies:
+    - test
 
   

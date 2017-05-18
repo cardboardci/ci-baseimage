@@ -12,6 +12,8 @@ export IMAGE="${IMAGE_ARG:-jrbeverly/baseimage:alpine}"
 # Tests
 #
 # Run tests
+sh ${ROOT_DIR}/tests/tests_alpine.sh
+
 (
     function assertEquals()
     {
@@ -28,5 +30,3 @@ export IMAGE="${IMAGE_ARG:-jrbeverly/baseimage:alpine}"
 
     # Tests specific to this image.
 )
-
-sh ${ROOT_DIR}/tests/tests_alpine.sh
