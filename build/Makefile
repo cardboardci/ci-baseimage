@@ -25,7 +25,7 @@ DOCKERFILE ?= $(VERSIONS)/$(VERSION)/Dockerfile
 # Rules
 #
 # Rules of the makefile
-.PHONY: build debug pull push prune clean release
+.PHONY: test build debug pull push prune clean release 
 
 # Build rules
 #
@@ -83,6 +83,9 @@ ubuntu: build
 
 debug:
 	@echo Docker Image: $(DOCKER_IMAGE):$(TAG)
+
+test:
+	sh ${DIRECTORY_ROOT}/tests/test_${VERSION}.sh
 
 # Generic rules
 #
