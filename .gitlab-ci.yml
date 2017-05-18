@@ -4,7 +4,7 @@ services:
   - docker:dind
 
 before_script:
-  - docker login -u $DOCKER_BUILD_USER -p $DOCKER_BUILD_TOKEN
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
   - apk --no-cache add make
 
 stages:
@@ -36,6 +36,7 @@ build:
 #release:
 #  stage: release
 #  script:
+#    - docker login -u $DOCKER_BUILD_USER -p $DOCKER_BUILD_TOKEN
 #    - make -C build/ VERSION=alpine TAG=alpine pull
 #  dependencies:
 #    - test
