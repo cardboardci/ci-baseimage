@@ -19,6 +19,7 @@ variables:
   GIT_COMMIT: ${CI_COMMIT_SHA}
   PREFIX_TAG: ${CI_COMMIT_SHA}-
   RELEASE_IMAGE: docker.io/jrbeverly/baseimage
+  IMAGE_VERSION: alpine
 
 # Build
 #
@@ -26,8 +27,8 @@ variables:
 build:
   stage: build
   script:
-    - make -C build/ alpine
-    - make -C build/ VERSION=alpine TAG=alpine push
+    - make -C build/ $IMAGE_VERSION
+    - make -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION push
   only:
     - tags
   except:
@@ -39,8 +40,8 @@ build:
 test:
   stage: test
   script:
-    - make -s -C build/ VERSION=alpine TAG=alpine pull
-    - make -s -C build/ VERSION=alpine TAG=alpine test
+    - make -s -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION pull
+    - make -s -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION test
   dependencies:
     - build
   only:
@@ -55,8 +56,8 @@ release:
   stage: release
   script:
     - docker login -u $DOCKER_BUILD_USER -p $DOCKER_BUILD_TOKEN
-    - make -C build/ VERSION=alpine TAG=alpine pull
-    - make -C build/ VERSION=alpine TAG=alpine release
+    - make -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION pull
+    - make -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION release
   dependencies:
     - test
   only:
