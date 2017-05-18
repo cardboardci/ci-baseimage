@@ -25,13 +25,13 @@ build:
     - make -C build/ alpine
     - make -C build/ VERSION=alpine TAG=alpine push
 
-#test:
-#  stage: test
-#  script:
-#    - make -C build/ VERSION=alpine TAG=alpine pull
-#    - make -C build/ VERSION=alpine TAG=alpine test
-#  dependencies:
-#    - build
+test:
+  stage: test
+  script:
+    - make -C build/ VERSION=alpine TAG=alpine pull
+    - make -C build/ VERSION=alpine TAG=alpine test
+  dependencies:
+    - build
 
 #release:
 #  stage: release
