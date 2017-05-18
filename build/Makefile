@@ -7,7 +7,6 @@ include Makefile.user.variable
 # Variables used for the generic build
 TAG ?= alpine
 VERSION ?= alpine
-#PREFIX_TAG
 
 # Variables
 #

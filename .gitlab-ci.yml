@@ -28,6 +28,10 @@ build:
   script:
     - make -C build/ alpine
     - make -C build/ VERSION=alpine TAG=alpine push
+  only:
+    - tags
+  except:
+    - branches
 
 # Test
 #
@@ -39,6 +43,10 @@ test:
     - make -s -C build/ VERSION=alpine TAG=alpine test
   dependencies:
     - build
+  only:
+    - tags
+  except:
+    - branches
 
 # Release
 #
@@ -51,5 +59,7 @@ release:
     - make -C build/ VERSION=alpine TAG=alpine release
   dependencies:
     - test
-
-  
+  only:
+    - tags
+  except:
+    - branches
