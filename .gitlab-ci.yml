@@ -13,8 +13,11 @@ stages:
   - release
 
 variables:
-  GIT_COMMIT: "${CI_COMMIT_SHA}"
-  PREFIX_TAG: "${CI_COMMIT_SHA}"
+  REGISTRY: registry.gitlab.com
+  NAMESPACE: jrbeverly-docker
+  PROJECT: docker-baseimage
+  GIT_COMMIT: ${CI_COMMIT_SHA}
+  PREFIX_TAG: ${CI_COMMIT_SHA}-
 
 build:
   stage: build
@@ -22,19 +25,19 @@ build:
     - make -C build/ alpine
     - make -C build/ VERSION=alpine TAG=alpine push
 
-test:
-  stage: test
-  script:
-    - make -C build/ VERSION=alpine TAG=alpine pull
-    - make -C build/ VERSION=alpine TAG=alpine test
-  dependencies:
-    - build
+#test:
+#  stage: test
+#  script:
+#    - make -C build/ VERSION=alpine TAG=alpine pull
+#    - make -C build/ VERSION=alpine TAG=alpine test
+#  dependencies:
+#    - build
 
-release:
-  stage: release
-  script:
-    - make -C build/ VERSION=alpine TAG=alpine pull
-  dependencies:
-    - test
+#release:
+#  stage: release
+#  script:
+#    - make -C build/ VERSION=alpine TAG=alpine pull
+#  dependencies:
+#    - test
 
   
