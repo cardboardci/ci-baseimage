@@ -2,16 +2,18 @@ include Makefile.metadata.variable
 include Makefile.image.variable
 include Makefile.user.variable
 
-# Variables
-#
-# Common variables of the project.
-DOCKER_IMAGE := ${REGISTRY}/${NAMESPACE}/${PROJECT}
-
 # Build Variables
 #
 # Variables used for the generic build
 TAG ?= alpine
 VERSION ?= alpine
+#PREFIX_TAG
+
+# Variables
+#
+# Common variables of the project.
+DOCKER_IMAGE := ${REGISTRY}/${NAMESPACE}/${PROJECT}
+IMAGE_REF ?= $(DOCKER_IMAGE):$(PREFIX_TAG)$(TAG)
 
 # File System Variables
 #
@@ -33,7 +35,7 @@ DOCKERFILE ?= $(VERSIONS)/$(VERSION)/Dockerfile
 
 build:
 	docker build --pull \
-		 -t ${DOCKER_IMAGE}:$(TAG) \
+		 -t $(IMAGE_REF) \
 		--build-arg BUILD_DATE="${BUILD_DATE}" \
 		--build-arg VERSION="${CODE_VERSION}" \
 		--build-arg VCS_REF="${GIT_COMMIT}" \
@@ -82,10 +84,10 @@ ubuntu: build
 # Test rules for docker projects.
 
 debug:
-	@echo Docker Image: $(DOCKER_IMAGE):$(TAG)
+	@echo Docker Image: $(IMAGE_REF)
 
 test:
-	sh ${DIRECTORY_ROOT}/tests/test_${VERSION}.sh
+	sh ${DIRECTORY_ROOT}/tests/test_${VERSION}.sh $(IMAGE_REF)
 
 # Generic rules
 #
@@ -98,10 +100,10 @@ prune:
 	docker images -q -f dangling=true | xargs --no-run-if-empty docker rmi
 
 pull:
-	docker pull ${DOCKER_IMAGE}:${TAG}
+	docker pull $(IMAGE_REF)
 
 push:
-	docker push ${DOCKER_IMAGE}:${TAG}
+	docker push $(IMAGE_REF)
 
 release:
-	docker push ${DOCKER_IMAGE}:$(TAG)
+	docker push $(IMAGE_REF)
