@@ -31,6 +31,7 @@ build:
     - make -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION push
   only:
     - tags
+    - /^versions-.*$/
   except:
     - master
 
@@ -46,6 +47,7 @@ test:
     - build
   only:
     - tags
+    - /^versions-.*$/
   except:
     - master
 
@@ -62,5 +64,6 @@ release:
     - test
   only:
     - tags
+    - /^versions-.*$/
   except:
     - master
