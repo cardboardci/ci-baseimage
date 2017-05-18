@@ -87,7 +87,7 @@ debug:
 	@echo Docker Image: $(IMAGE_REF)
 
 test:
-	bash ${DIRECTORY_ROOT}/tests/test_${VERSION}.sh $(IMAGE_REF)
+	sh ${DIRECTORY_ROOT}/tests/test_${VERSION}.sh $(IMAGE_REF)
 
 # Generic rules
 #

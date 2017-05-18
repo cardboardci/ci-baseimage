@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Variables
 #
@@ -12,22 +12,21 @@ export IMAGE="${IMAGE_ARG:-jrbeverly/baseimage:alpine}"
 # Tests
 #
 # Run tests
-sh ${ROOT_DIR}/tests/tests_alpine.sh
-
 (
-    [[ "${BASH_SOURCE[0]}" == "${0}" ]] || exit 0
     function assertEquals()
     {
-        msg=$1; shift
-        expected=$1; shift
-        actual=$1; shift
-        /bin/echo -n "$msg: "
+        msg=$1
+        expected=$2
+        actual=$3
+
         if [ "$expected" != "$actual" ]; then
-            echo "FAILED: EXPECTED=$expected ACTUAL=$actual"
+            echo "$msg: FAILED: EXPECTED=$expected ACTUAL=$actual"
         else
-            echo PASSED
+            echo "$msg: PASSED"
         fi
     }
 
     # Tests specific to this image.
 )
+
+sh ${ROOT_DIR}/tests/tests_alpine.sh
