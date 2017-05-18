@@ -31,7 +31,7 @@ build:
   only:
     - tags
   except:
-    - branches
+    - master
 
 # Test
 #
@@ -46,7 +46,7 @@ test:
   only:
     - tags
   except:
-    - branches
+    - master
 
 # Release
 #
@@ -62,4 +62,4 @@ release:
   only:
     - tags
   except:
-    - branches
+    - master
