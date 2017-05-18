@@ -6,9 +6,27 @@
 SCRIPT=$(readlink -f "$0")
 DIR="$(dirname $SCRIPT)"
 ROOT_DIR="$(dirname $DIR)"
-export IMAGE=jrbeverly/baseimage:ubuntu-16.10
+IMAGE_ARG="$1"
+export IMAGE="${IMAGE_ARG:-jrbeverly/baseimage:ubuntu}"
 
 # Tests
 #
 # Run tests
 sh ${ROOT_DIR}/tests/tests_ubuntu.sh
+
+(
+    function assertEquals()
+    {
+        msg=$1
+        expected=$2
+        actual=$3
+
+        if [ "$expected" != "$actual" ]; then
+            echo "$msg: FAILED: EXPECTED=$expected ACTUAL=$actual"
+        else
+            echo "$msg: PASSED"
+        fi
+    }
+
+    # Tests specific to this image.
+)

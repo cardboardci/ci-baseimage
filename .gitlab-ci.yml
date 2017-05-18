@@ -1,0 +1,65 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+  - apk --no-cache add make
+
+stages:
+  - build
+  - test
+  - release
+
+variables:
+  REGISTRY: registry.gitlab.com
+  NAMESPACE: jrbeverly-docker
+  PROJECT: docker-baseimage
+  GIT_COMMIT: ${CI_COMMIT_SHA}
+  PREFIX_TAG: ${CI_COMMIT_SHA}-
+  RELEASE_IMAGE: docker.io/jrbeverly/baseimage
+
+# Build
+#
+# Build steps.
+build:
+  stage: build
+  script:
+    - make -C build/ alpine
+    - make -C build/ VERSION=alpine TAG=alpine push
+  only:
+    - tags
+  except:
+    - master
+
+# Test
+#
+# Test steps.
+test:
+  stage: test
+  script:
+    - make -s -C build/ VERSION=alpine TAG=alpine pull
+    - make -s -C build/ VERSION=alpine TAG=alpine test
+  dependencies:
+    - build
+  only:
+    - tags
+  except:
+    - master
+
+# Release
+#
+# Release steps.
+release:
+  stage: release
+  script:
+    - docker login -u $DOCKER_BUILD_USER -p $DOCKER_BUILD_TOKEN
+    - make -C build/ VERSION=alpine TAG=alpine pull
+    - make -C build/ VERSION=alpine TAG=alpine release
+  dependencies:
+    - test
+  only:
+    - tags
+  except:
+    - master
