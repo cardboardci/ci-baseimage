@@ -28,8 +28,8 @@ build:
 test:
   stage: test
   script:
-    - make -C build/ VERSION=alpine TAG=alpine pull
-    - make -C build/ VERSION=alpine TAG=alpine test
+    - make -s -C build/ VERSION=alpine TAG=alpine pull
+    - make -s -C build/ VERSION=alpine TAG=alpine test
   dependencies:
     - build
 
