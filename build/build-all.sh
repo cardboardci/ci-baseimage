@@ -17,6 +17,5 @@ for dirname in *
 do
   test -d "$dirname" || continue
 
-  make -C "${BUILD_DIR}" ${dirname}
-  make -C "${BUILD_DIR}" TAG=${dirname} release
+  make -C "${BUILD_DIR}" VERSION=${dirname} build
 done

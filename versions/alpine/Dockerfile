@@ -52,5 +52,5 @@ LABEL \
     org.label-schema.vendor="jrbeverly" \
     org.label-schema.version=$VERSION \
     org.label-schema.schema-version="1.0" \
-    io.gitlab.jrbeverly.user=$DUID \
-    io.gitlab.jrbeverly.group=$DGID
+    io.jrbeverly.user=$DUID \
+    io.jrbeverly.group=$DGID
