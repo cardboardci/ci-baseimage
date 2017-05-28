@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM alpine:3.6
 MAINTAINER jrbeverly
 
 # Environment Variables
@@ -28,7 +28,7 @@ ARG DGID
 # User
 #
 # Configuration of the docker user for container execution.
-RUN addgroup --gid ${DGID} --system docker && adduser --system --uid ${DUID} --gid ${DGID} docker
+RUN addgroup -g ${DGID} -S docker && adduser -S -G docker -u ${DUID} docker
 
 # Metadata Arguments
 #

@@ -92,7 +92,6 @@ test:
 # Generic rules
 #
 # Generic rules for docker projects.
-
 clean:
 	docker rmi $(shell docker images | grep ${NAMESPACE}/${PROJECT} | tr -s ' ' | cut -d ' ' -f 3)
 
