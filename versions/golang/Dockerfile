@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM golang
 MAINTAINER jrbeverly
 
 # Environment Variables

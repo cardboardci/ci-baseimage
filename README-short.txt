@@ -1,1 +1,0 @@
-A minimal base image modified for Docker-CI.
