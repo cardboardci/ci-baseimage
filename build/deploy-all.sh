@@ -18,5 +18,5 @@ do
 
   make -s -C "${BUILD_DIR}" VERSION=${dirname} pull
   make -s -C "${BUILD_DIR}" VERSION=${dirname} release
-  make -s -C "${BUILD_DIR}" VERSION=${dirname} push
+  make -s -C "${BUILD_DIR}" VERSION=${dirname} deploy
 done

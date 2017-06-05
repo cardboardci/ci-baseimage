@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# 
+# Variables
+#
+SCRIPT=$(readlink -f "$0")
+DIR="$(dirname $SCRIPT)"
+ROOT_DIR="$(dirname $DIR)"
+BIN_DIR="${DIR}/target"
+DATA_DIR="${DIR}/resources"
+LIB_DIR="${DIR}/lib"
+
+# 
+# Tests
+#
+source $LIB_DIR/testbase.sh
+
+#
+# Test Runner
+#
+(
+    rm -rf $BIN_DIR
+    mkdir -p $BIN_DIR
+
+    (
+      RESULT=$(is_empty_apk)
+      assertEquals "the cache is empty" 0 $?
+    )
+
+    (
+      RESULT=$(install_apk)
+      assertEquals "install to image" 0 $?
+    )
+)

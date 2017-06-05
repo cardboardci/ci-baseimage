@@ -123,7 +123,7 @@ build: check-path check-tag
 # Tests the working docker image
 test: check-version check-tag check-test
 	@echo Running '$(VERSION)' tests on $(WORKING_IMAGE).
-	docker run --rm -v $(MOUNT_TESTS):/media $(WORKING_IMAGE) sh test_${VERSION}.sh
+	docker run --rm -v $(MOUNT_TESTS):/media $(WORKING_IMAGE) bash test_${VERSION}.sh
 
 # Registry 
 #
