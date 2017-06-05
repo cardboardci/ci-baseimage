@@ -3,67 +3,78 @@ image: docker:latest
 services:
   - docker:dind
 
-before_script:
-  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-  - apk --no-cache add make
+# ---------------------------------------
+# Global
+# ---------------------------------------
 
 stages:
   - build
   - test
-  - release
+  - deploy
 
 variables:
-  REGISTRY: registry.gitlab.com
-  NAMESPACE: jrbeverly-docker
-  PROJECT: docker-baseimage
-  GIT_COMMIT: ${CI_COMMIT_SHA}
-  PREFIX_TAG: ${CI_COMMIT_SHA}-
-  RELEASE_IMAGE: docker.io/jrbeverly/baseimage
-  IMAGE_VERSION: alpine
+  STAGING_REGISTRY: registry.gitlab.com
+  STAGING_NAMESPACE: jrbeverly-docker
+  STAGING_PROJECT: docker-rsvg
 
+  REGISTRY: docker.io
+  NAMESPACE: jrbeverly
+  PROJECT: rsvg
+
+  GIT_COMMIT: ${CI_COMMIT_SHA}
+  TAG_PREFIX: ${CI_PIPELINE_ID}-
+
+# ----------------------------------------
+# Prescript
+# ----------------------------------------
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+  - apk --no-cache add make
+
+# ----------------------------------------
 # Build
-#
-# Build steps.
+# ----------------------------------------
+
 build:
   stage: build
   script:
-    - make -C build/ $IMAGE_VERSION
-    - make -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION push
+    - sh build/build-all.sh
   only:
     - tags
     - /^versions-.*$/
   except:
-    - master
+    - branches
 
-# Test
-#
-# Test steps.
+# ----------------------------------------
+# Tests
+# ----------------------------------------
+
 test:
   stage: test
   script:
-    - make -s -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION pull
-    - make -s -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION test
+    - sh build/test-all.sh
   dependencies:
     - build
   only:
     - tags
     - /^versions-.*$/
   except:
-    - master
+    - branches
 
-# Release
-#
-# Release steps.
-release:
-  stage: release
+# ----------------------------------------
+# Deploy
+# ----------------------------------------
+
+deploy:
+  stage: deploy
   script:
     - docker login -u $DOCKER_BUILD_USER -p $DOCKER_BUILD_TOKEN
-    - make -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION pull
-    - make -C build/ VERSION=$IMAGE_VERSION TAG=$IMAGE_VERSION release
+    - sh build/deploy-all.sh
   dependencies:
     - test
   only:
     - tags
     - /^versions-.*$/
   except:
-    - master
+    - branches
