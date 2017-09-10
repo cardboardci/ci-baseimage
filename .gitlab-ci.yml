@@ -15,11 +15,11 @@ stages:
 variables:
   STAGING_REGISTRY: registry.gitlab.com
   STAGING_NAMESPACE: jrbeverly-docker
-  STAGING_PROJECT: docker-rsvg
+  STAGING_PROJECT: docker-xwindow
 
   REGISTRY: docker.io
   NAMESPACE: jrbeverly
-  PROJECT: rsvg
+  PROJECT: xwindow
 
   GIT_COMMIT: ${CI_COMMIT_SHA}
   TAG_PREFIX: ${CI_PIPELINE_ID}-
@@ -29,39 +29,60 @@ variables:
 # ----------------------------------------
 
 before_script:
-  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-  - apk --no-cache add make
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $STAGING_REGISTRY
+  - apk --update-cache add make
 
 # ----------------------------------------
 # Build
 # ----------------------------------------
 
-build:
+build-baseimage:
   stage: build
+  variables:
+    VERSION: baseimage
   script:
-    - sh build/build-all.sh
-    - sh build/push-all.sh
+    - make -C build/ build
+    - make -C build/ push
   only:
-    - tags
-    - /^versions-.*$/
-  except:
-    - branches
+    - web
+
+build-privileged:
+  stage: build
+  variables:
+    VERSION: privileged
+  script:
+    - make -C build/ build
+    - make -C build/ push
+  only:
+    - web
 
 # ----------------------------------------
 # Tests
 # ----------------------------------------
 
-test:
+test-baseimage:
   stage: test
+  variables:
+    VERSION: baseimage
   script:
-    - sh build/test-all.sh
+    - make -s -C build/ pull
+    - make -s -C build/ test
   dependencies:
-    - build
+    - build-baseimage
   only:
-    - tags
-    - /^versions-.*$/
-  except:
-    - branches
+    - web
+
+test-privileged:
+  stage: test
+  variables:
+    VERSION: privileged
+  script:
+    - make -s -C build/ pull
+    - make -s -C build/ test
+  dependencies:
+    - build-privileged
+  only:
+    - web
 
 # ----------------------------------------
 # Deploy
@@ -70,12 +91,11 @@ test:
 deploy:
   stage: deploy
   script:
+    - sh build/ci/pull.sh
     - docker login -u $DOCKER_BUILD_USER -p $DOCKER_BUILD_TOKEN
-    - sh build/deploy-all.sh
+    - sh build/ci/deploy.sh
   dependencies:
-    - test
+    - test-baseimage
+    - test-privileged
   only:
-    - tags
-    - /^versions-.*$/
-  except:
-    - branches
+    - web
