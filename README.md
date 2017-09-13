@@ -1,9 +1,4 @@
-# Dockerized Baseimage
-[![Image][image-badge]][image-link]
-[![License][license-badge]][license-link]
-[![Build][build-badge]][build-link]
-
----
+# Docker Baseimage
 
  * [Summary](#summary)
  * [Usage](#usage)
@@ -11,19 +6,27 @@
  * [Build Process](#build-process)
  * [Labels](#labels)
  * [User and Group Mapping](#user-and-group-mapping)
+ * [Acknowledgements](#acknowledgements)
+
+---
 
 ## Summary
 
-A super small image for use as a continuous integration base image.
+A super small image with [X Window System](https://www.x.org/wiki/) development libraries installed. The project icon is from [cre.ativo mustard, HK from the Noun Project](docs/icon/README.md).
+
+## Image
+
+[![Image][image-badge]][image-link]
+[![License][license-badge]][license-link]
+[![Build][build-badge]][build-link]
+[![Docker][docker-badge]][docker-link]
 
 ## Usage
 
-You can setup a new docker image based on this image with the following:
+You can use this image locally with `docker run`, calling `g++` to build X Window System applications:
 
-```docker
-FROM jrbeverly/baseimage:alpine-3.5
-
-RUN apk add --update make
+```bash
+docker run -v /media/:/media/ jrbeverly/xwindow:privileged g++ myxapp.cpp -o xapp
 ```
 
 ### Gitlab
@@ -31,32 +34,29 @@ RUN apk add --update make
 You can setup a build job using `.gitlab-ci.yml`:
 
 ```yaml
-build:
-  image: jrbeverly/baseimage:alpine-3.5
+compile:
+  image: jrbeverly/xwindow:baseimage
   script:
-    - echo 'Tasks'
+    - g++ myxapp.cpp -o xapp
+  artifacts:
+    paths:
+      - xapp
 ```
 
 ## Image Tags
 
-Build tags available with the image `jrbeverly/baseimage:{TAG}`.
+Build tags available with the image: `jrbeverly/xwindow`.
 
 | Tag | Status | Description |
 | --- | ------ | ----------- |
-| [![Version alpine][edge-badge]][edge-link] | [![Image edge][edge-image-badge]][edge-link] | An alpine image based on `alpine:edge`. |
-| [![Version alpine 3.5][3.5-badge]][3.5-link] | [![Image 3.5][3.5-image-badge]][3.5-link] | An alpine image based on `alpine:3.5`. |
-| [![Version alpine 3.4][3.4-badge]][3.4-link] | [![Image 3.4][3.4-image-badge]][3.4-link] | An alpine image based on `alpine:3.4`. |
-| [![Version alpine 3.3][3.3-badge]][3.3-link] | [![Image 3.3][3.3-image-badge]][3.3-link] | An alpine image based on `alpine:3.3`. |
-| [![Version alpine 3.2][3.2-badge]][3.2-link] | [![Image 3.2][3.2-image-badge]][3.2-link] | An alpine image based on `alpine:3.2`. |
-| [![Version ubuntu 16.04][16.04-badge]][16.04-link] | [![Image 16.04][16.04-image-badge]][16.04-link] | An ubuntu image based on `ubuntu:16.04`. |
-| [![Version ubuntu 16.10][16.10-badge]][16.10-link] | [![Image 16.10][16.10-image-badge]][16.10-link] | An ubuntu image based on `ubuntu:16.10`. |
-| [![Version ubuntu 17.04][17.04-badge]][17.04-link] | [![Image 16.04][17.04-image-badge]][17.04-link] | An ubuntu image based on `ubuntu:17.04`. |
+| [![Version base][base-badge]][base-link] | [![Image base][base-image-badge]][base-link] | A docker image with libx11 installed, running as docker user (`DUID`). |
+| [![Version privileged][privileged-badge]][privileged-link] | [![Image privileged][privileged-image-badge]][privileged-link] | A docker image with libx11 installed, running with elevated permissions (root). |
 
 ## Components
 
 ### Metadata Arguments
 
-Metadata build arguments used in the system, the follow the [Label Schema Convention](http://label-schema.org).
+Metadata build arguments used with the [Label Schema Convention](http://label-schema.org).
 
 | Variable | Value | Description |
 | -------- | ----- |------------ |
@@ -66,106 +66,79 @@ Metadata build arguments used in the system, the follow the [Label Schema Conven
 
 ### Build Arguments
 
-Build arguments used in the system.
+Build arguments used in the image.
 
 | Variable | Value | Description |
 | -------- | ------- |------------ |
-| DUID | see [user.variable](build/Makefile.user.variable) | The [user id](http://www.linfo.org/uid.html) of the docker user. |
-| DGID | see [user.variable](build/Makefile.user.variable) | The [group id](http://www.linfo.org/uid.html) of the docker user's group. |
+| USER | see `Makefile.options` | Sets the [user](http://www.linfo.org/uid.html) to use when running the image. |
+| DUID | see [user.variable](info/Makefile.user.variable) | The [user id](http://www.linfo.org/uid.html) of the docker user. |
+| DGID | see [user.variable](info/Makefile.user.variable) | The [group id](http://www.linfo.org/uid.html) of the docker user's group. |
 
 ### Volumes
 
-Volumes exposed by the docker container.[^1]
+No volumes are exposed by the docker container. However, while running the image with limited permissions (`baseimage`), it is necessary to ensure that the **docker user** has permission to access mounted volumes. You will need to ensure that the **docker user** can read/write to the mounted volumes. (see [User / Group Identifiers](#user-and-group-mapping))
 
-| Volume | Description |
-| ------ | ----------- |
-
-### Environment Variables
-
-Environment variables used in the system.
-
-| Variable | Default | Description |
-| -------- | ------- |------------ |
-| HOME | / | The pathname of the user's home directory. |
+The working directory of the image is `/media/`.
 
 ## Build Process
 
-To build the docker image, use the included [`Makefile`](Makefile). It is recommended to use the makefile to ensure all build arguments are provided.
+To build the docker image, use the included [`Makefile`](build/Makefile). It is recommended to use the makefile to ensure all build arguments are provided.
 
-```
-make alpine-3.5
-make ubuntu-17.04
-make VERSION=alpine TAG=alpine build
+```bash
+make VERSION=<version> build
 ```
 
-You can also build the image manually, as visible in [`Makefile`](Makefile).  However this is discouraged as the makefile ensures all build arguments are properly formatted.
+You can view the [`build/README.md`](build/README.md) for more on using the `Makefile` to build the image.
 
 ## Labels
 
-The docker image follows the [Label Schema Convention](http://label-schema.org).  The values in the namespace can be accessed by the following command:
+The docker image follows the [Label Schema Convention](http://label-schema.org). Label Schema is a community project to provide a shared namespace for use by multiple tools, specifically `org.label-schema`. The values in the namespace can be accessed by the following command:
 
-```console
-docker inspect -f '{{ index .Config.Labels "org.label-schema.LABEL" }}' IMAGE
+```bash
+docker inspect -f '{{ index .Config.Labels "org.label-schema.<LABEL>" }}' jrbeverly/xwindow
 ```
 
-The label namespace `io.gitlab.jrbeverly` is common among `jrbeverly-docker` images and is a loosely structured set of values.  The values in the namespace can be accessed by the following command:
+### Label Extension
 
-```console
-docker inspect -f '{{ index .Config.Labels "io.gitlab.jrbeverly.LABEL" }}' IMAGE
+The label namespace `org.doc-schema` is an extension of `org.label-schema`. The namespace stores internal variables often used when interacting with the image. These variables will often be application versions or exposed internal variables. The values in the namespace can be accessed by the following command:
+
+```bash
+docker inspect -f '{{ index .Config.Labels "org.doc-schema.<LABEL>" }}' jrbeverly/xwindow
 ```
 
 ## User and Group Mapping
 
-All processes within the docker container will be run as the **docker user**, a non-root user.  The **docker user** is created on build with the user id `DUID` and a member of a group with group id `DGID`.  
+All processes within the `baseimage` docker container will be run as the **docker user**, a non-root user. The **docker user** is created on build with the user id `DUID` and a member of a group with group id `DGID`.
 
-Any permissions on the host operating system (OS) associated with either the user (`DUID`) or group (`DGID`) will be associated with the docker user.  The values of `DUID` and `DGID` are visible in the [Build Arguments](#build-arguments), and can be accessed by the commands:
+Any permissions on the host operating system (OS) associated with either the user (`DUID`) or group (`DGID`) will be associated with the docker user. The values of `DUID` and `DGID` are visible in the [Build Arguments](#build-arguments), and can be accessed by the commands:
 
-```console
-docker inspect -f '{{ index .Config.Labels "io.gitlab.jrbeverly.user" }}' IMAGE
-docker inspect -f '{{ index .Config.Labels "io.gitlab.jrbeverly.group" }}' IMAGE
+```bash
+docker inspect -f '{{ index .Config.Labels "org.doc-schema.user" }}' jrbeverly/xwindow:baseimage
+docker inspect -f '{{ index .Config.Labels "org.doc-schema.group" }}' jrbeverly/xwindow:baseimage
 ```
 
-The notation of the build variables is short form for docker user id (`DUID`) and docker group id (`DGID`). 
+The notation of the build variables is short form for docker user id (`DUID`) and docker group id (`DGID`).
 
-[^1]: It is necessary to ensure that the **docker user** (`DUID`) has permission to access volumes. (see [User / Group Identifiers](#user-and-group-mapping))
+## Acknowledgements
 
-[build-badge]: https://gitlab.com/jrbeverly-docker/docker-baseimage/badges/master/build.svg
-[build-link]: https://gitlab.com/jrbeverly-docker/docker-baseimage/commits/master
+The project icon is from [cre.ativo mustard, HK from the Noun Project](docs/icon/README.md).
 
-[license-badge]: https://images.microbadger.com/badges/license/jrbeverly/baseimage.svg
-[license-link]: https://microbadger.com/images/jrbeverly/baseimage "Get your own license badge on microbadger.com"
+[image-badge]: https://img.shields.io/badge/ubuntu-17.04-orange.svg?maxAge=2592000
+[image-link]: https://hub.docker.com/r/_/ubuntu/ "The common base image."
 
-[image-badge]: https://img.shields.io/badge/base-alpine-orange.svg?maxAge=2592000
-[image-link]: https://hub.docker.com/_/alpine/
+[build-badge]: https://gitlab.com/jrbeverly-docker/docker-xwindow/badges/master/build.svg
+[build-link]: https://gitlab.com/jrbeverly-docker/docker-xwindow/commits/master "Current build status."
 
-[edge-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:alpine.svg
-[edge-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/baseimage:alpine.svg
-[edge-link]: https://microbadger.com/images/jrbeverly/baseimage:alpine "Get your own version badge on microbadger.com"
+[docker-badge]: https://img.shields.io/badge/jrbeverly-xwindow-red.svg?maxAge=2592000
+[docker-link]: https://hub.docker.com/r/jrbeverly/xwindow/ "The docker image."
 
-[3.5-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:alpine-3.5.svg
-[3.5-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/baseimage:alpine-3.5.svg
-[3.5-link]: https://microbadger.com/images/jrbeverly/baseimage:alpine-3.5 "Get your own version badge on microbadger.com"
+[license-badge]: https://images.microbadger.com/badges/license/jrbeverly/xwindow.svg
+[license-link]: https://microbadger.com/images/jrbeverly/xwindow "Get your own license badge on microbadger.com"
 
-[3.4-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:alpine-3.4.svg
-[3.4-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/baseimage:alpine-3.4.svg
-[3.4-link]: https://microbadger.com/images/jrbeverly/baseimage:alpine-3.4 "Get your own version badge on microbadger.com"
+[base-badge]: https://images.microbadger.com/badges/version/jrbeverly/xwindow:baseimage.svg
+[base-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/xwindow:baseimage.svg
+[base-link]: https://microbadger.com/images/jrbeverly/xwindow:baseimage "Get your own version badge on microbadger.com"
 
-[3.3-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:alpine-3.3.svg
-[3.3-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/baseimage:alpine-3.3.svg
-[3.3-link]: https://microbadger.com/images/jrbeverly/baseimage:alpine-3.3 "Get your own version badge on microbadger.com"
-
-[3.2-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:alpine-3.2.svg
-[3.2-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/baseimage:alpine-3.2.svg
-[3.2-link]: https://microbadger.com/images/jrbeverly/baseimage:alpine-3.2 "Get your own version badge on microbadger.com"
-
-[16.04-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:ubuntu-16.04.svg
-[16.04-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/baseimage:ubuntu-16.04.svg
-[16.04-link]: https://microbadger.com/images/jrbeverly/baseimage:ubuntu-16.04 "Get your own version badge on microbadger.com"
-
-[16.10-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:ubuntu-16.10.svg
-[16.10-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/baseimage:ubuntu-16.10.svg
-[16.10-link]: https://microbadger.com/images/jrbeverly/baseimage:ubuntu-16.10 "Get your own version badge on microbadger.com"
-
-[17.04-badge]: https://images.microbadger.com/badges/version/jrbeverly/baseimage:ubuntu-17.04.svg
-[17.04-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/baseimage:ubuntu-17.04.svg
-[17.04-link]: https://microbadger.com/images/jrbeverly/baseimage:ubuntu-17.04 "Get your own version badge on microbadger.com"
+[privileged-badge]: https://images.microbadger.com/badges/version/jrbeverly/xwindow:privileged.svg
+[privileged-image-badge]: https://images.microbadger.com/badges/image/jrbeverly/xwindow:privileged.svg
+[privileged-link]: https://microbadger.com/images/jrbeverly/xwindow:privileged "Get your own version badge on microbadger.com"
