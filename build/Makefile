@@ -175,7 +175,7 @@ test: check-version check-tag check-test ## Test an image for a specific version
 		-v /var/run/docker.sock:/docker.sock \
 		-e DOCKER_HOST="unix:///docker.sock" \
 		\
-		jrbeverly/dbats bats $(VERSION).bash
+		$(WORKING_IMAGE) sh test/$(VERSION)/test.sh
 
 #========================
 # Validation
