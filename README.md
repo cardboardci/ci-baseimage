@@ -1,15 +1,5 @@
 # Docker Baseimage
 
- * [Summary](#summary)
- * [Usage](#usage)
- * [Components](#components)
- * [Build Process](#build-process)
- * [Labels](#labels)
- * [User and Group Mapping](#user-and-group-mapping)
- * [Acknowledgements](#acknowledgements)
-
----
-
 ## Summary
 
 A super small image with [X Window System](https://www.x.org/wiki/) development libraries installed. The project icon is from [cre.ativo mustard, HK from the Noun Project](docs/icon/README.md).
@@ -35,7 +25,7 @@ You can setup a build job using `.gitlab-ci.yml`:
 
 ```yaml
 compile:
-  image: jrbeverly/xwindow:baseimage
+  image: jrbeverly/baseimage:baseimage
   script:
     - g++ myxapp.cpp -o xapp
   artifacts:
