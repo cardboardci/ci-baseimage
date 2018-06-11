@@ -2,7 +2,7 @@
 
 ## Summary
 
-A super small image to act as a baseimage for continuous integration images. The project icon is from [cre.ativo mustard, HK from the Noun Project](docs/icon/README.md).
+A super small image to act as a baseimage for continuous integration images. The project icon is from [cre.ativo mustard, HK from the Noun Project](docs/icon/icon.json).
 
 ## Usage
 
