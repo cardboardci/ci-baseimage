@@ -2,14 +2,7 @@
 
 ## Summary
 
-A super small image with [X Window System](https://www.x.org/wiki/) development libraries installed. The project icon is from [cre.ativo mustard, HK from the Noun Project](docs/icon/README.md).
-
-## Image
-
-[![Image][image-badge]][image-link]
-[![License][license-badge]][license-link]
-[![Build][build-badge]][build-link]
-[![Docker][docker-badge]][docker-link]
+A super small image to act as a baseimage for continuous integration images. The project icon is from [cre.ativo mustard, HK from the Noun Project](docs/icon/README.md).
 
 ## Usage
 
