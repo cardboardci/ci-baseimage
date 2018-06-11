@@ -11,6 +11,7 @@ is_empty_apk()
 
 is_empty_apt()
 {
+    mkdir -p /var/lib/apt/lists/
     ls -1 /var/lib/apt/lists/ | wc -l >/dev/null 2>&1  
 }
 
@@ -21,6 +22,6 @@ install_apk()
 
 install_apt()
 {
-    apt-get update  >/dev/null 2>&1  
-    apt-get install -y zip  >/dev/null 2>&1  
+    apt-get update >/dev/null 2>&1  
+    apt-get install -y zip >/dev/null 2>&1  
 }
