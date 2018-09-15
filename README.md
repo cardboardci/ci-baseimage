@@ -4,6 +4,8 @@
 
 A super small image to act as a baseimage for continuous integration images. The project icon is from [cre.ativo mustard, HK from the Noun Project](docs/icon/icon.json).
 
+**NOTE: This image is marked EOL, and use is discouraged.**
+
 ## Usage
 
 You can use this image locally with `docker run`, calling `g++` to build X Window System applications:
